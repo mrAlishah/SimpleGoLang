@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"simple_gin_crud/controller"
 	"simple_gin_crud/service"
@@ -15,13 +16,20 @@ var (
 
 func main() {
 	server := gin.Default() //gin router ~ Server
-	server.GET("/videos", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, videoController.FindAll())
-	})
 
-	server.POST("/videos", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, videoController.Save(ctx))
-	})
+	videoRoutes := server.Group("/video")
+	{
+		videoRoutes.GET("/", func(ctx *gin.Context) {
+			ctx.JSON(http.StatusOK, videoController.FindAll())
+		})
 
-	server.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+		videoRoutes.POST("/", func(ctx *gin.Context) {
+			ctx.JSON(http.StatusOK, videoController.Save(ctx))
+		})
+	}
+
+	//server.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	if err := server.Run(":5000"); err != nil {
+		log.Fatal(err.Error())
+	}
 }

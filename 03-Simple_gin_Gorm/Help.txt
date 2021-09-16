@@ -1,0 +1,8 @@
+1- install Gorm
+go get -u gorm.io/gorm
+
+2-install Sqlite gorm driver
+go get -u gorm.io/driver/sqlite
+
+3-Install gin
+go get -u github.com/gin-gonic/gin

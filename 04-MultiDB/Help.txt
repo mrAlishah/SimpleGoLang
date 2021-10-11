@@ -1,0 +1,55 @@
+https://github.com/golang/go/wiki/SQLDrivers
+
+1- init go.mod
+go mod init multiDB
+
+for install package dependencies
+- go mod download
+- go build
+- npm install 
+
+2-
+Download mySQL
+https://www.mysql.com/downloads/
+free version is
+MySQL Community (GPL) Downloads
+
+install driver
+go get -u github.com/go-sql-driver/mysql
+
+
+3- 
+Download postgreSQL
+https://www.postgresql.org/download/
+
+pgAdmin for management or Navicat 
+
+4-
+install postgreSQL Package
+https://github.com/lib/pq
+
+-go get github.com/lib/pq
+
+5- 
+download sqllite
+https://www.sqlite.org/download.html
+Precompiled Binaries for Windows
+A bundle of command-line tools for managing SQLite database files, including the command-line shell program, the sqldiff.exe program, and the sqlite3_analyzer.exe program.
+
+set sqlite3.exe at application path
+
+6- 
+-go get github.com/mattn/go-sqlite3
+if has error
+exec: "gcc": executable file not found in %PATH%
+
+see:
+https://medium.com/@yaravind/go-sqlite-on-windows-f91ef2dacfe
+
+
+7-
+mangoDB driver
+https://labix.org/mgo
+
+go get gopkg.in/mgo.v2
+

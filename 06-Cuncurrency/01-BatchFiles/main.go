@@ -20,12 +20,16 @@ func main() {
 	err := filepath.Walk(fld, func(file string, filInfo os.FileInfo, err error) error {
 		if !filInfo.IsDir() {
 
-			md5, err := md5Generate(file)
-			fmt.Printf("MD5= %s , File= %s , Error=%v \n", md5, file, err)
+			//it's bad solution 1- it's not completely finished for main goroutain 2- Resource Starvation problem
+			go func(file string) {
+				md5, err := md5Generate(file)
+				fmt.Printf("MD5= %s , File= %s , Error=%v \n", md5, file, err)
 
-			if err := writeToFile(file, outfile, md5); err != nil {
-				panic(err)
-			}
+				if err := writeToFile(file, outfile, md5); err != nil {
+					panic(err)
+				}
+
+			}(file)
 		}
 		return nil
 	})

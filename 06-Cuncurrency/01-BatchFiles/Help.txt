@@ -10,3 +10,10 @@ Other Operational Site:
 TimeTrack
 https://coderwall.com/p/cp5fya/measuring-execution-time-in-go
 
+
+Step Tracker:
+1- Simple: 
+   18.9981 ms
+2- simple go routin:
+   bad solution
+

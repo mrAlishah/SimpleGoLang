@@ -1,0 +1,6 @@
+1- Add go-jwt
+//go get -u github.com/dgrijalva/jwt-go old package
+go get github.com/golang-jwt/jwt
+
+2- Add gin
+go get -u github.com/gin-gonic/gin

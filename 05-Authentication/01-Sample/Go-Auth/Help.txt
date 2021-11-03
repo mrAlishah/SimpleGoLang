@@ -1,0 +1,14 @@
+1- Install fiber
+go get github.com/gofiber/fiber/v2
+
+2- install gorm
+go get -u gorm.io/gorm
+
+3-Install mySQLDriver
+go get -u gorm.io/driver/mysql
+
+4-
+go get golang.org/x/crypto/bcrypt
+
+5- install jwt
+go get github.com/dgrijalva/jwt-go

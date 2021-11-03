@@ -1,2 +1,2 @@
 run:
-	go run main.go "c:\SQLite"
+	go run main.go "c:\SQLite" "c:\SQLite\outfile.txt"

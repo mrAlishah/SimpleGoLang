@@ -1,17 +1,20 @@
 package main
 
 import (
+	"batchFils/myLib"
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 func main() {
 	fld := os.Args[1]
 	outfile := os.Args[2]
+	defer myLib.TimeTrack(time.Now(), "main")
 
 	//Read Folder files
 	err := filepath.Walk(fld, func(file string, filInfo os.FileInfo, err error) error {

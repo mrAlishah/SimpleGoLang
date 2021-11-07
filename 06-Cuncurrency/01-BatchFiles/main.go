@@ -8,6 +8,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
+	"sync"
 	"time"
 )
 
@@ -16,27 +18,58 @@ func main() {
 	outfile := os.Args[2]
 	defer myLib.TimeTrack(time.Now(), "main")
 
+	//-----------------------------------------
+	//fan in in order to avoid race condition
+	librerian := make(chan []string)
+	writeDone := make(chan struct{})
+
+	go func() {
+		for result := range librerian {
+			writeToFile(result[1], outfile, result[0], result[2])
+		}
+		writeDone <- struct{}{} //if writedon==nil return main thread to rutin else end prog and exit main
+	}()
+	//-----------------------------------------
+
+	wg := &sync.WaitGroup{}
+	//-----------------------------------------
+
+	//fan out
+	pipline := make(chan string)
+	createWorkers(10, pipline, librerian, wg)
+	//-----------------------------------------
+
+	go func() {
+		wg.Wait() //wait wg emtpty and worker finished
+		close(librerian)
+	}()
+	//-----------------------------------------
+
 	//Read Folder files
 	err := filepath.Walk(fld, func(file string, filInfo os.FileInfo, err error) error {
 		if !filInfo.IsDir() {
 
-			//it's bad solution 1- it's not completely finished for main goroutain 2- Resource Starvation problem
-			go func(file string) {
-				md5, err := md5Generate(file)
-				fmt.Printf("MD5= %s , File= %s , Error=%v \n", md5, file, err)
+			//ِdistributed task between workers
+			fmt.Printf("- pipline <- file => %s \n", file)
+			pipline <- file
 
-				if err := writeToFile(file, outfile, md5); err != nil {
-					panic(err)
-				}
-
-			}(file)
 		}
 		return nil
 	})
 
+	//-----------------------------------------
+	//1-finished all files and workers done => used close(pipeline)
+	//2-close witer channel after complete worker read file finished => Used WaitGroup
+	//3- wait till write channel will be free => used wg.Wait(); close(librarian)
+	//4- keep alive writeDone
+
+	close(pipline)
+
 	if err != nil {
 		panic(err)
 	}
+	//-----------------------------------------
+	<-writeDone
 }
 
 //Create MD5
@@ -59,7 +92,7 @@ func md5Generate(filename string) (string, error) {
 }
 
 //Write info to args[2] filename
-func writeToFile(filename, outfilename, md5sum string) error {
+func writeToFile(filename, outfilename, md5sum, workerId string) error {
 	file, err := os.OpenFile(outfilename, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0755) //ModePerm FileMode = 0777 // Unix permission bits
 	if err != nil {
 		return err
@@ -67,7 +100,28 @@ func writeToFile(filename, outfilename, md5sum string) error {
 	defer file.Close()
 
 	file.WriteString(fmt.Sprintf("%s ; %s \n", md5sum, filename))
-
+	fmt.Printf("-> Worker #%s Write=> %s \n", workerId, filename)
 	//https://stackoverflow.com/questions/10862375/when-to-flush-a-file-in-go
 	return file.Sync()
+}
+
+func createWorkers(count int, pipline <-chan string, fanIn chan<- []string, wg *sync.WaitGroup) {
+	for i := 0; i <= count; i++ {
+		wg.Add(1) //add to the waitgroup counter
+
+		go func(workerId int) {
+			fmt.Printf("Worker #%d is ready to ricieve job ... \n", workerId)
+			for file := range pipline {
+				md5, _ := md5Generate(file)
+				fmt.Printf("<- Worker #%d getMD5=> %s \n", workerId, file)
+
+				//worker deliver his work to librerian
+				fanIn <- []string{md5, file, strconv.Itoa(workerId)}
+			}
+
+			wg.Done() //signal that the worker work is done
+
+		}(i)
+
+	}
 }

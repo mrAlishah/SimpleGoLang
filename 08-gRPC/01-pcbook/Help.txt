@@ -1,0 +1,63 @@
+src:
+https://dev.to/techschoolguru/how-to-define-a-protobuf-message-and-generate-go-code-4g4e
+
+1- For install Protocol Buffer Compiler.
+https://grpc.io/docs/protoc-installation/
+
+Linux, using apt or apt-get, for example:
+
+$ apt install -y protobuf-compiler
+$ protoc --version  # Ensure compiler version is 3+
+
+MacOS, using Homebrew: https://brew.sh/
+$ brew install protobuf
+$ protoc --version  # Ensure compiler version is 3+
+
+
+for windows, latest precompiled
+https://developers.google.com/protocol-buffers/docs/downloads#release-packages
+
+Download protoc-3.19.1-win64.zip
+Unzip
+Add Path Environment
+C:\Program Files\Go\protoc-3.19.1-win64\bin
+
+2- Install the protocol compiler plugins for Go using the following commands
+https://grpc.io/docs/languages/go/quickstart/
+
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+or
+https://grpc.io/blog/installation/
+
+go get -u google.golang.org/grpc
+
+
+-----------------------------------------
+MacOS 
+Error:: protoc-gen-go: program not found or is not executable
+https://formulae.brew.sh/formula/protoc-gen-go
+
+brew install protoc-gen-go
+
+https://grpc.io/docs/languages/go/quickstart/#regenerate-grpc-code
+
+Syntax
+
+	protoc --go_out=. --go_opt=paths=source_relative \
+    --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+    proto/*.proto
+
+ok
+	protoc proto/processor_message.proto --go_out=. --go_opt=paths=source_relative
+	protoc proto/processor_message.proto --go_out=pb --go_opt=paths=source_relative
+
+-----------------------------------------
+go get -u github.com/golang/protobuf/protoc-gen-go
+go get -u google.golang.org/protobuf/protoc-gen-go
+go get -u google.golang.org/protobuf/cmd/protoc-gen-go
+go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc
+-----------------------------------------------------------------
+
+https://github.com/evilsocket/opensnitch/issues/373

@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option go_package = "./";
+
+message CPU {
+    string brand = 1;
+    string name = 2;  
+    uint32 number_cores =3;
+    uint32 number_threads = 4;
+    double min_qhz = 5;
+    double max_ghz = 6;
+     
+}

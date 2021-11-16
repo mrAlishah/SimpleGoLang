@@ -1,0 +1,26 @@
+1- For install Protocol Buffer Compiler.
+https://grpc.io/docs/protoc-installation/
+
+Linux, using apt or apt-get, for example:
+
+$ apt install -y protobuf-compiler
+$ protoc --version  # Ensure compiler version is 3+
+
+MacOS, using Homebrew: https://brew.sh/
+$ brew install protobuf
+$ protoc --version  # Ensure compiler version is 3+
+
+
+for windows, latest precompiled
+https://developers.google.com/protocol-buffers/docs/downloads#release-packages
+
+Download protoc-3.19.1-win64.zip
+Unzip
+Add Path Environment
+C:\Program Files\Go\protoc-3.19.1-win64\bin
+
+2- Install the protocol compiler plugins for Go using the following commands
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+go get -u github.com/golang/protobuf/protoc-gen-go 

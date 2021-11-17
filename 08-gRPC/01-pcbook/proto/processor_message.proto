@@ -1,6 +1,10 @@
 syntax = "proto3";
 
-option go_package = "./";
+package proto;
+
+import "proto/memory_message.proto";
+
+option go_package = ".;pb";
 
 message CPU {
     string brand = 1;
@@ -11,3 +15,11 @@ message CPU {
     double max_ghz = 6;
      
 }
+
+message GPU {
+    string brand = 1;
+    string name = 2;
+    double min_ghz = 3;
+    double max_ghz = 4;
+    Memory memory = 5;
+  }

@@ -1,6 +1,5 @@
 gen:
-    protoc -I. proto/*.proto --go_out=plugins=grpc:pb
-
+    protoc proto/*.proto --go_out=pb
 	
 clean:
 	del /f /s /q pb
@@ -14,6 +13,8 @@ pro:
 other:
     protoc -I. proto/*.proto --go_opt=paths=source_relative --go_out=plugins=grpc:pb
     protoc --go_out=plugins=grpc:pb proto/*.proto
+
+    protoc -I. proto/*.proto --go_out=plugins=grpc:pb
 
 	protoc --go_out=. --go_opt=paths=source_relative \
     --go-grpc_out=. --go-grpc_opt=paths=source_relative \

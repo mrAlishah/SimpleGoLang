@@ -1,0 +1,13 @@
+1-
+go get -u gorm.io/gorm
+2-
+go get -u github.com/lib/pq
+
+Database Connection
+https://gorm.io/docs/connecting_to_the_database.html
+
+
+Gorm V2 Release and diffrentaion
+https://gorm.io/docs/v2_release_note.html
+
+3- go get -u gopkg.in/yaml.v2

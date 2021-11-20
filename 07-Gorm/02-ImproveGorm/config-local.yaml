@@ -1,0 +1,8 @@
+POSTGRES:
+  HOST: localhost
+  PORT: 5432
+  DBNAME: postgres
+  USER: postgres
+  PASSWORD: alish
+  SSLMODE: disable
+  DEBUG: true

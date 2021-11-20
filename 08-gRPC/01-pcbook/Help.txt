@@ -1,6 +1,13 @@
 src:
 https://dev.to/techschoolguru/how-to-define-a-protobuf-message-and-generate-go-code-4g4e
 
+**Simplicity Packge for proto
+   https://github.com/golang/protobuf
+   
+** Simplicity Packge for Marshal
+	https://github.com/gogo/protobuf
+	https://github.com/protocolbuffers/protobuf
+
 1- For install Protocol Buffer Compiler.
 https://grpc.io/docs/protoc-installation/
 
@@ -61,3 +68,22 @@ go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc
 -----------------------------------------------------------------
 
 https://github.com/evilsocket/opensnitch/issues/373
+
+
+//##################################################################
+2- get UUID
+
+go get github.com/google/uuid
+
+3- get Unit test
+
+go get github.com/stretchr/testify
+
+Perfix Test at function name is important
+	func TestFileSerializer(t *testing.T)
+
+postfix _test at package name is important
+	package serializer_test
+
+4- get package for convert protobuf bainary to json
+	go get github.com/golang/protobuf/jsonpb

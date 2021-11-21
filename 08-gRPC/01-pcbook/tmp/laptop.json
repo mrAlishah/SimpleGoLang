@@ -1,27 +1,27 @@
 {
-  "id": "c26eb09c-3ae1-4733-ae1a-2f288e9fb026",
-  "brand": "Lenovo",
-  "name": "Thinkpad X1",
+  "id": "4553a42d-f2b4-4daf-99fb-2c0a62f9be49",
+  "brand": "Apple",
+  "name": "Macbook Air",
   "cpu": {
-    "brand": "AMD",
-    "name": "Ryzen 3 PRO 3200GE",
-    "number_cores": 5,
-    "number_threads": 5,
-    "min_ghz": 2.0984555288262143,
-    "max_ghz": 2.552603107028386
+    "brand": "Intel",
+    "name": "Core i7-9750H",
+    "number_cores": 7,
+    "number_threads": 11,
+    "min_ghz": 2.5920345798424678,
+    "max_ghz": 2.7576420281447573
   },
   "ram": {
-    "value": "41",
+    "value": "29",
     "unit": "GIGABYTE"
   },
   "gpus": [
     {
       "brand": "Nvidia",
       "name": "GTX 1660-Ti",
-      "min_ghz": 1.4068199804950483,
-      "max_ghz": 1.533917028612668,
+      "min_ghz": 1.2702432375883004,
+      "max_ghz": 1.42879904078915,
       "memory": {
-        "value": "3",
+        "value": "4",
         "unit": "GIGABYTE"
       }
     }
@@ -30,33 +30,33 @@
     {
       "driver": "SSD",
       "memory": {
-        "value": "319",
+        "value": "820",
         "unit": "GIGABYTE"
       }
     },
     {
       "driver": "HDD",
       "memory": {
-        "value": "6",
+        "value": "3",
         "unit": "TERABYTE"
       }
     }
   ],
   "screen": {
-    "size_inch": 14.132136,
+    "size_inch": 16.235008,
     "resolution": {
-      "width": 6076,
-      "height": 3418
+      "width": 2586,
+      "height": 1455
     },
-    "panel": "IPS",
+    "panel": "OLED",
     "multitouch": false
   },
   "keyboard": {
-    "layout": "QWERTZ",
-    "backlit": false
+    "layout": "QWERTY",
+    "backlit": true
   },
-  "weight_kg": 2.1413465521420454,
-  "price_usd": 3224.9828748957725,
-  "release_year": 2018,
-  "updated_at": "2021-11-21T10:57:50.439213200Z"
+  "weight_kg": 1.4270539317604114,
+  "price_usd": 2774.1273470528376,
+  "release_year": 2015,
+  "updated_at": "2021-11-21T13:12:10.224171400Z"
 }

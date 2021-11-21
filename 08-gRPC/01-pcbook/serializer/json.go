@@ -7,10 +7,10 @@ import (
 
 // ProtobufToJSON converts protocol buffer message to JSON string
 func ProtobufToJSON(message proto.Message) (string, error) {
-	// UseEnumNumbers:Write enums as integers or strings.
-	// EmitUnpopulated:Write fields with default value or not.
+	// UseEnumNumbers:Write enums as integers or strings. false = enum as string
+	// EmitUnpopulated:Write fields with default value or not. true= use default value
 	// Indent:What's the indentation we want to use.
-	// UseProtoNames:Do we want to use the original field name as in the proto file.
+	// UseProtoNames:Do we want to use the original field name as in the proto file. true = set as proto field , false= set as clamecase
 
 	//https://godocs.io/google.golang.org/protobuf/encoding/protojson#MarshalOptions
 	//https://seb-nyberg.medium.com/customizing-protobuf-json-serialization-in-golang-6c58b5890356

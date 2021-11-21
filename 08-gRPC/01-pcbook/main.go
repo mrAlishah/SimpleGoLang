@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"pcbook/sample"
+)
 
 func main() {
-	fmt.Println("hello world")
+	fmt.Println("%v", sample.NewLaptop())
 }

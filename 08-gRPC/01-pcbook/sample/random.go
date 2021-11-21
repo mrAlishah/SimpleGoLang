@@ -3,17 +3,25 @@ package sample
 import (
 	"math/rand"
 	"pcbook/pb"
+	"time"
 
 	"github.com/google/uuid"
 )
 
+func initialRand() {
+	// https://golang.cafe/blog/golang-random-number-generator.html
+	rand.Seed(time.Now().UnixNano())
+}
+
 //---------------------------------------  Random Boolean
 func randomBool() bool {
+	initialRand()
 	return rand.Intn(2) == 1
 }
 
 //---------------------------------------  Random enum
 func randomKeyboardLayout() pb.Keyboard_Layout {
+	initialRand()
 	switch rand.Intn(3) {
 	case 1:
 		return pb.Keyboard_QWERTY
@@ -26,6 +34,7 @@ func randomKeyboardLayout() pb.Keyboard_Layout {
 
 //---------------------------------------  Random String from set
 func randomStringFromSet(a ...string) string {
+	initialRand()
 	n := len(a)
 	if n == 0 {
 		return ""
@@ -62,18 +71,21 @@ func randomID() string {
 
 //---------------------------------------  Random int between min and max
 func randomInt(min, max int) int {
+	initialRand()
 	//rand.Intn() function will return an integer from 0 to max - min. So if we add min to it, we will get a value from min to max
 	return min + rand.Int()%(max-min+1)
 }
 
 //---------------------------------------  Random float64 between min and max
 func randomFloat64(min, max float64) float64 {
+	initialRand()
 	//rand.Float64() function will return a random float between 0 and 1. So we will multiply it with (max - min) to get a value between 0 and max - min
 	return min + rand.Float64()*(max-min)
 }
 
 //---------------------------------------  Random float64 between min and max
 func randomFloat32(min, max float32) float32 {
+	initialRand()
 	return min + rand.Float32()*(max-min)
 }
 
@@ -114,6 +126,7 @@ func randomScreenResolution() *pb.Screen_Resolution {
 
 //---------------------------------------
 func randomScreenPanel() pb.Screen_Panel {
+	initialRand()
 	if rand.Intn(2) == 1 {
 		return pb.Screen_IPS
 	}

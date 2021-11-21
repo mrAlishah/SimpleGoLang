@@ -1,0 +1,62 @@
+{
+  "id": "1d50c958-4af5-4060-be05-fac6f73cfcc3",
+  "brand": "Lenovo",
+  "name": "Thinkpad X1",
+  "cpu": {
+    "brand": "AMD",
+    "name": "Ryzen 3 PRO 3200GE",
+    "number_cores": 5,
+    "number_threads": 5,
+    "min_ghz": 2.0984555288262143,
+    "max_ghz": 2.552603107028386
+  },
+  "ram": {
+    "value": "41",
+    "unit": "GIGABYTE"
+  },
+  "gpus": [
+    {
+      "brand": "Nvidia",
+      "name": "GTX 1660-Ti",
+      "min_ghz": 1.4068199804950483,
+      "max_ghz": 1.533917028612668,
+      "memory": {
+        "value": "3",
+        "unit": "GIGABYTE"
+      }
+    }
+  ],
+  "storages": [
+    {
+      "driver": "SSD",
+      "memory": {
+        "value": "319",
+        "unit": "GIGABYTE"
+      }
+    },
+    {
+      "driver": "HDD",
+      "memory": {
+        "value": "6",
+        "unit": "TERABYTE"
+      }
+    }
+  ],
+  "screen": {
+    "size_inch": 14.132136,
+    "resolution": {
+      "width": 6076,
+      "height": 3418
+    },
+    "panel": "IPS",
+    "multitouch": false
+  },
+  "keyboard": {
+    "layout": "QWERTZ",
+    "backlit": false
+  },
+  "weight_kg": 2.1413465521420454,
+  "price_usd": 3224.9828748957725,
+  "release_year": 2018,
+  "updated_at": "2021-11-20T14:58:27.702821300Z"
+}

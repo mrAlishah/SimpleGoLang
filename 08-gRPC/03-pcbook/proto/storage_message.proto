@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package proto;
+
+import "proto/memory_message.proto";
+
+option go_package = ".;pb";
+
+message Storage {
+  enum Driver {
+    UNKNOWN = 0;
+    HDD = 1;
+    SSD = 2;
+  }
+
+  Driver driver = 1;
+  Memory memory = 2;
+}

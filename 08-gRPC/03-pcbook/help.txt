@@ -1,0 +1,57 @@
+1- see instalation
+https://github.com/gogo/protobuf
+
+-------------------------------------------------------------
+plan A
+** Just use it
+https://grpc.io/blog/installation/
+    go get google.golang.org/grpc
+
+-------------------------------------------------------------
+Plan B
+Other waye use these package
+
+0- How to install the protocol buffer compiler
+https://grpc.io/docs/protoc-installation/
+
+or easy instalation
+https://grpc.io/blog/installation/
+    go get google.golang.org/grpc
+
+2- install golang grpc library
+    go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+    go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc
+
+3- install protoc-gen-go library
+    go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+    go get -u google.golang.org/protobuf/cmd/protoc-gen-go
+
+more help:
+https://dev.to/techschoolguru/how-to-define-a-protobuf-message-and-generate-go-code-4g4e
+https://grpc.io/docs/languages/go/quickstart/
+https://github.com/gogo/protobuf
+https://github.com/protocolbuffers/protobuf
+https://github.com/protocolbuffers/protobuf-go
+
+-------------------------------------------------------------
+//##################################################################
+2- get UUID
+    go get github.com/google/uuid
+
+3- get Unit test
+
+go get github.com/stretchr/testify
+
+Perfix Test at function name is important
+	func TestFileSerializer(t *testing.T)
+
+postfix _test at package name is important
+	package serializer_test
+
+4- get package for convert protobuf bainary to json
+	go get github.com/golang/protobuf/jsonpb
+
+go get github.com/gogo/protobuf/proto
+go get github.com/gogo/protobuf/jsonpb
+go get github.com/gogo/protobuf/protoc-gen-gogo
+go get github.com/gogo/protobuf/gogoproto

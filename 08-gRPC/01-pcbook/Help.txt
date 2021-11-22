@@ -70,6 +70,15 @@ go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc
 https://github.com/evilsocket/opensnitch/issues/373
 
 
+Error
+type LaptopServiceServer interface {
+	//rpc func(input) return(output) {};
+	CreateLaptop(context.Context, *CreateLaptopRequest) (*CreateLaptopResponse, error)
+	mustEmbedUnimplementedLaptopServiceServer()
+}
+protoc proto/*.proto --go_out=pb --go-grpc_out=pb --go-grpc_opt=require_unimplemented_servers=false
+
+
 //##################################################################
 2- get UUID
 
@@ -87,3 +96,6 @@ postfix _test at package name is important
 
 4- get package for convert protobuf bainary to json
 	go get github.com/golang/protobuf/jsonpb
+
+5- get deepCopy
+	go get -u github.com/jinzhu/copier

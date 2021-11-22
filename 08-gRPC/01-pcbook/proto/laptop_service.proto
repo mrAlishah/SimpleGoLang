@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = ".;pb";
+
+import "proto/laptop_message.proto";
+
+message CreateLaptopRequest {
+    Laptop laptop = 1;
+}
+
+message CreateLaptopResponse {
+    string id = 1;
+}
+
+service LaptopService {
+    // Start with the keyword rpc, then the name of the RPC is CreateLaptop. 
+    //It takes a CreateLaptopRequest as input, and returns a CreateLaptopResponse.
+    // End it with a pair of curly brackets and a semicolon. 
+    
+    //rpc func(input) return(output) {};
+    rpc CreateLaptop (CreateLaptopRequest) returns (CreateLaptopResponse) {};
+}

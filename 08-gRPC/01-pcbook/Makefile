@@ -1,8 +1,16 @@
 gen:
-    protoc proto/*.proto --go_out=pb
+    protoc proto/*.proto --go_out=pb --go-grpc_out=pb 
 	
+#  --go-grpc_opt=require_unimplemented_servers=false
+
 clean:
 	del /f /s /q pb
+
+server:
+    go run cmd/server/main.go -port 8080
+
+client:
+    go run cmd/client/main.go -address 0.0.0.0:8080
 
 run:
 	go run main.go
@@ -19,11 +27,6 @@ gen1:
 clean1:
     rm pb/*.go 
 
-server:
-    go run cmd/server/main.go -port 8080
-
-client:
-    go run cmd/client/main.go -address 0.0.0.0:8080
 
 # -------------------------------------------------------------------
 other:

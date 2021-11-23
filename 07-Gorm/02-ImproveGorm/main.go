@@ -52,8 +52,11 @@ func main() {
 		FirstName: "saeed",
 		LastName:  "asadolahi",
 	}
-	userRepo.Add(&newUser)
-
+	userAdd, err := userRepo.Add(newUser)
+	if err != nil {
+		fmt.Printf("failed to Create Repo: %s", err.Error())
+	}
+	fmt.Printf("New Record  %v \n", userAdd)
 }
 
 func printAll(users []entity.User) {

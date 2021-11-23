@@ -4,16 +4,17 @@ import (
 	"fmt"
 	"simplegorm/entity"
 
+	"github.com/jinzhu/copier"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
 
 type UserRepository interface {
 	InitUserData()
-	Add(user entity.User)  (entity.User,error)
+	Add(user entity.User) (*entity.User, error)
 	Update(user entity.User) error
 	Delete(user entity.User) error
-	FindFirst(id int) (entity.User, error)
+	FindFirst(id int) (*entity.User, error)
 	FindAll(where string) ([]entity.User, error)
 }
 
@@ -62,19 +63,19 @@ func (repo *userRepository) InitUserData() {
 	setDivider()
 }
 
-func (repo *userRepository) Add(user *entity.User) error {
+func (repo *userRepository) Add(user entity.User) (*entity.User, error) {
 	println("=>Add:: Create New User")
 
 	err := repo.db.Create(&user).Error
 	if err != nil {
 		fmt.Printf("**Err:: Create New User : %s", err.Error())
-		return err
+		return nil, err
 	} else {
 		fmt.Printf("%v\n", user)
 		setDivider()
 	}
 
-	return nil
+	return &user, nil
 }
 
 func (repo *userRepository) Update(user entity.User) error {
@@ -149,4 +150,15 @@ func (repo *userRepository) FindAll(where string) ([]entity.User, error) {
 
 func setDivider() {
 	println("==============================\n")
+}
+
+func deepCopy(user *entity.User) (*entity.User, error) {
+	other := &entity.User{}
+
+	err := copier.Copy(other, user)
+	if err != nil {
+		return nil, fmt.Errorf("cannot copy data: %w", err)
+	}
+
+	return other, nil
 }

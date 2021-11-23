@@ -5,6 +5,8 @@ package proto;
 option go_package = ".;pb";
 
 import "proto/laptop_message.proto";
+import "proto/filter_message.proto";
+
 
 message CreateLaptopRequest {
     Laptop laptop = 1;
@@ -14,6 +16,10 @@ message CreateLaptopResponse {
     string id = 1;
 }
 
+message SearchLaptopRequest { Filter filter = 1; }
+
+message SearchLaptopResponse { Laptop laptop = 1; }
+
 service LaptopService {
     // Start with the keyword rpc, then the name of the RPC is CreateLaptop. 
     //It takes a CreateLaptopRequest as input, and returns a CreateLaptopResponse.
@@ -21,4 +27,7 @@ service LaptopService {
     
     //rpc func(input) return(output) {};
     rpc CreateLaptop (CreateLaptopRequest) returns (CreateLaptopResponse) {};
+
+    rpc SearchLaptop (SearchLaptopRequest) returns (stream SearchLaptopResponse) {};
+
 }

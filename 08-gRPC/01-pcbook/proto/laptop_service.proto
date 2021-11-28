@@ -20,6 +20,27 @@ message SearchLaptopRequest { Filter filter = 1; }
 
 message SearchLaptopResponse { Laptop laptop = 1; }
 
+message ImageInfo {
+    string laptop_id = 1;
+    string image_type = 2; //such as ".jpg" or ".png".
+}
+//The idea is to divide the image file into multiple chunks, and send them one by one to the server in each request message.
+// I use a oneof field here because the first request will only contain the metadata, or some basic information of the image. 
+//Then the following requests will contain the image data chunks.
+message UploadImageRequest {
+    oneof data {
+      ImageInfo info = 1;
+      bytes chunk_data = 2;
+    };
+  }
+
+//will be returned to the client once the server has received all chunks of the image
+message UploadImageResponse {
+    string id = 1;
+    uint32 size = 2;
+}
+
+
 service LaptopService {
     // Start with the keyword rpc, then the name of the RPC is CreateLaptop. 
     //It takes a CreateLaptopRequest as input, and returns a CreateLaptopResponse.
@@ -29,5 +50,7 @@ service LaptopService {
     rpc CreateLaptop (CreateLaptopRequest) returns (CreateLaptopResponse) {};
 
     rpc SearchLaptop (SearchLaptopRequest) returns (stream SearchLaptopResponse) {};
+
+    rpc UploadImage(stream UploadImageRequest) returns (UploadImageResponse) {};
 
 }

@@ -9,6 +9,7 @@ import (
 	"pcbook/service"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 func main() {
@@ -23,6 +24,14 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 	pb.RegisterLaptopServiceServer(grpcServer, laptopServer)
+
+	//1- google search: golang grpc reflection => Enabled Enable Server Reflection
+	//https://github.com/grpc/grpc-go/blob/master/Documentation/server-reflection-tutorial.md
+	reflection.Register(grpcServer)
+	//2- Install Evans client
+	//https://dev.to/techschoolguru/grpc-reflection-and-evans-cli-3oia  - Installation
+	//3- use it CLI
+	//https://dev.to/techschoolguru/grpc-reflection-and-evans-cli-3oia
 
 	address := fmt.Sprintf("0.0.0.0:%d", *port)
 	listener, err := net.Listen("tcp", address)

@@ -4,12 +4,14 @@ import (
 	"bufio"
 	"context"
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
 	"pcbook/pb"
 	"pcbook/sample"
+	"strings"
 	"time"
 
 	"google.golang.org/grpc"
@@ -30,7 +32,8 @@ func main() {
 	laptopClient := pb.NewLaptopServiceClient(conn)
 	//testCreateLaptop(laptopClient)
 	//testSearchLaptop(laptopClient)
-	testUploadImage(laptopClient)
+	//testUploadImage(laptopClient)
+	testRateLaptop(laptopClient)
 }
 
 func testCreateLaptop(laptopClient pb.LaptopServiceClient) {
@@ -50,13 +53,48 @@ func testSearchLaptop(laptopClient pb.LaptopServiceClient) {
 	}
 
 	searchLaptop(laptopClient, filter)
-
 }
 
 func testUploadImage(laptopClient pb.LaptopServiceClient) {
 	laptop := sample.NewLaptop()
 	createLaptop(laptopClient, laptop)
 	uploadImage(laptopClient, laptop.GetId(), "tmp/golang.jpg")
+}
+
+func testRateLaptop(laptopClient pb.LaptopServiceClient) {
+
+	//Let’s say we want to rate 3 laptops, so we declare a slice to keep the laptop IDs
+	n := 3
+	laptopIDs := make([]string, n)
+
+	//use a for loop to generate a random laptop, save its ID to the slice, and call createLaptop() function to create it on the server
+	for i := 0; i < n; i++ {
+		laptop := sample.NewLaptop()
+		laptopIDs[i] = laptop.GetId()
+		createLaptop(laptopClient, laptop)
+	}
+
+	scores := make([]float64, n)
+	for {
+		fmt.Print("rate laptop (y/n)? ")
+		var answer string
+		fmt.Scan(&answer)
+
+		//I will use a for loop here and ask if we want to do another round of rating or not
+		if strings.ToLower(answer) != "y" {
+			break
+		}
+
+		//If the answer is no, we break the loop. Else we generate a new set of scores for the laptops and call rateLaptop() function to rate them with the generated scores.
+		for i := 0; i < n; i++ {
+			scores[i] = sample.RandomLaptopScore()
+		}
+
+		err := rateLaptop(laptopClient, laptopIDs, scores)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 }
 
 func createLaptop(laptopClient pb.LaptopServiceClient, laptop *pb.Laptop) {
@@ -196,4 +234,65 @@ func uploadImage(laptopClient pb.LaptopServiceClient, laptopID string, imagePath
 	}
 
 	log.Printf("image uploaded with id: %s, size: %d", res.GetId(), res.GetSize())
+}
+
+func rateLaptop(laptopClient pb.LaptopServiceClient, laptopIDs []string, scores []float64) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	stream, err := laptopClient.RateLaptop(ctx)
+	if err != nil {
+		return fmt.Errorf("cannot rate laptop: %v", err)
+	}
+
+	//we will have to make a channel to wait for the responses from the server.
+	// The waitResponse channel will receive an error when it occurs, or a nil if all responses are received successfully.
+	waitResponse := make(chan error)
+	// go routine to receive responses
+	//Note that the requests and responses are sent concurrently, so we have to start a new go routine to receive the responses.
+	// In the go routine, we use a for loop, and call stream.Recv() to get a response from the server
+	go func() {
+		for {
+			res, err := stream.Recv()
+			//If error is EOF, it means there’s no more responses, so we send nil to the waitResponse channel, and return. Else,
+			// if error is not nil, we send the error to the waitResponse channel, and return as well. If no errors occur, we just write a simple log.
+			if err == io.EOF {
+				log.Print("no more responses")
+				waitResponse <- nil
+				return
+			}
+			if err != nil {
+				waitResponse <- fmt.Errorf("cannot receive stream response: %v", err)
+				return
+			}
+
+			log.Print("received response: ", res)
+		}
+	}()
+
+	// send requests
+	for i, laptopID := range laptopIDs {
+		req := &pb.RateLaptopRequest{
+			LaptopId: laptopID,
+			Score:    scores[i],
+		}
+
+		err := stream.Send(req)
+		//Note that here we call stream.RecvMsg() to get the real error
+		if err != nil {
+			return fmt.Errorf("cannot send stream request: %v - %v", err, stream.RecvMsg(nil))
+		}
+
+		log.Print("sent request: ", req)
+	}
+
+	//Now one important thing that we must do after sending all requests, which is, to call stream.CloseSend() to tell the server that we won’t send any more data.
+	//And finally read from the waitResponse channel and return the received error.
+	err = stream.CloseSend()
+	if err != nil {
+		return fmt.Errorf("cannot close send: %v", err)
+	}
+
+	err = <-waitResponse
+	return err
 }

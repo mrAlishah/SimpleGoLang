@@ -22,7 +22,7 @@ func TestClientCreateLaptop(t *testing.T) {
 	t.Parallel()
 
 	laptopStore := service.NewInMemoryLaptopStore()
-	serverAddress := startTestLaptopServer(t, laptopStore, nil)
+	serverAddress := startTestLaptopServer(t, laptopStore, nil, nil)
 	laptopClient := newTestLaptopClient(t, serverAddress)
 
 	laptop := sample.NewLaptop()
@@ -46,8 +46,8 @@ func TestClientCreateLaptop(t *testing.T) {
 }
 
 //create a new laptop server with an in-memory laptop store
-func startTestLaptopServer(t *testing.T, laptopStore service.LaptopStore, imageStore service.ImageStore) string {
-	laptopServer := service.NewLaptopServer(laptopStore, imageStore)
+func startTestLaptopServer(t *testing.T, laptopStore service.LaptopStore, imageStore service.ImageStore, ratingStore service.RatingStore) string {
+	laptopServer := service.NewLaptopServer(laptopStore, imageStore, ratingStore)
 
 	//We create the gRPC server by calling grpc.NewServer() function, then register the laptop service server on that gRPC server.
 	grpcServer := grpc.NewServer()
@@ -121,7 +121,7 @@ func TestClientSearchLaptop(t *testing.T) {
 	}
 
 	//Then call this function to start the test server, and create a laptop client object with that server address
-	serverAddress := startTestLaptopServer(t, laptopStore, nil)
+	serverAddress := startTestLaptopServer(t, laptopStore, nil, nil)
 	laptopClient := newTestLaptopClient(t, serverAddress)
 
 	//After that, we create a new SearchLaptopRequest with the filter
@@ -174,7 +174,7 @@ func TestClientUploadImage(t *testing.T) {
 	err := laptopStore.Save(laptop)
 	require.NoError(t, err)
 
-	serverAddress := startTestLaptopServer(t, laptopStore, imageStore)
+	serverAddress := startTestLaptopServer(t, laptopStore, imageStore, nil)
 	laptopClient := newTestLaptopClient(t, serverAddress)
 
 	imagePath := fmt.Sprintf("%s/golang.jpg", testImageFolder)
@@ -229,4 +229,63 @@ func TestClientUploadImage(t *testing.T) {
 	savedImagePath := fmt.Sprintf("%s/%s%s", testImageFolder, res.GetId(), imageType)
 	require.FileExists(t, savedImagePath)
 	require.NoError(t, os.Remove(savedImagePath))
+}
+
+func TestClientRateLaptop(t *testing.T) {
+	t.Parallel()
+
+	//We just create a new laptop store, new rating store, generate a random laptop and save it to the store.
+	laptopStore := service.NewInMemoryLaptopStore()
+	ratingStore := service.NewInMemoryRatingStore()
+
+	laptop := sample.NewLaptop()
+	err := laptopStore.Save(laptop)
+	require.NoError(t, err)
+
+	//hen we start the test laptop server to get the server adress, and use it to create a test laptop client.
+	serverAddress := startTestLaptopServer(t, laptopStore, nil, ratingStore)
+	laptopClient := newTestLaptopClient(t, serverAddress)
+
+	stream, err := laptopClient.RateLaptop(context.Background())
+	require.NoError(t, err)
+
+	scores := []float64{8, 7.5, 10}
+	averages := []float64{8, 7.75, 8.5}
+
+	//For simplicity, we just rate 1 single laptop, but we will rate it 3 times
+	n := len(scores)
+	for i := 0; i < n; i++ {
+		req := &pb.RateLaptopRequest{
+			LaptopId: laptop.GetId(),
+			Score:    scores[i],
+		}
+
+		//Each time we will create a new request with the same laptop ID and a new score.
+		//We call stream.Send() to send the request to the server, and require no errors to be returned
+		err := stream.Send(req)
+		require.NoError(t, err)
+	}
+
+	// After sending all the rate laptop requests, we call stream.CloseSend() just like what we did in the client code.
+	err = stream.CloseSend()
+	require.NoError(t, err)
+
+	//To be simple, I don't create a separate go routine to receive the responses.
+	//Here I simply use a for loop to receive them, and use an idx variable to count how many responses we have received.
+	for idx := 0; ; idx++ {
+		//we call stream.Recv() to receive a new response. If error is EOF, then it’s the end of the stream
+		res, err := stream.Recv()
+
+		//we just require that the number of responses we received must be equal to n, which is the number of requests we sent, and we return immediately.
+		if err == io.EOF {
+			require.Equal(t, n, idx)
+			return
+		}
+
+		require.NoError(t, err)
+		require.Equal(t, laptop.GetId(), res.GetLaptopId())
+		require.Equal(t, uint32(idx+1), res.GetRatedCount())
+		//average score should be equal to the expected value
+		require.Equal(t, averages[idx], res.GetAverageScore())
+	}
 }

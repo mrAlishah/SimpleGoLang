@@ -30,10 +30,10 @@ func main() {
 	}
 
 	laptopClient := pb.NewLaptopServiceClient(conn)
-	//testCreateLaptop(laptopClient)
+	testCreateLaptop(laptopClient)
 	//testSearchLaptop(laptopClient)
 	//testUploadImage(laptopClient)
-	testRateLaptop(laptopClient)
+	//testRateLaptop(laptopClient)
 }
 
 func testCreateLaptop(laptopClient pb.LaptopServiceClient) {

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -37,9 +36,10 @@ func main() {
 	ratingStore := service.NewInMemoryRatingStore()
 	laptopServer := service.NewLaptopServer(laptopStore, imageStore, ratingStore)
 
+	interceptor := service.NewAuthInterceptor(jwtManager, accessibleRoles())
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(unaryInterceptor),
-		grpc.StreamInterceptor(streamInterceptor),
+		grpc.UnaryInterceptor(interceptor.Unary()),
+		grpc.StreamInterceptor(interceptor.Stream()),
 	)
 
 	pb.RegisterAuthServiceServer(grpcServer, authServer)
@@ -67,26 +67,6 @@ func main() {
 	}
 }
 
-func unaryInterceptor(
-	ctx context.Context,
-	req interface{},
-	info *grpc.UnaryServerInfo,
-	handler grpc.UnaryHandler,
-) (interface{}, error) {
-	log.Println("--> unary interceptor: ", info.FullMethod)
-	return handler(ctx, req)
-}
-
-func streamInterceptor(
-	srv interface{},
-	stream grpc.ServerStream,
-	info *grpc.StreamServerInfo,
-	handler grpc.StreamHandler,
-) error {
-	log.Println("--> stream interceptor: ", info.FullMethod)
-	return handler(srv, stream)
-}
-
 func seedUsers(userStore service.UserStore) error {
 	err := createUser(userStore, "admin1", "secret", "admin")
 	if err != nil {
@@ -105,4 +85,14 @@ func createUser(
 		return err
 	}
 	return userStore.Save(user)
+}
+
+func accessibleRoles() map[string][]string {
+	const laptopServicePath = "/techschool.pcbook.LaptopService/"
+
+	return map[string][]string{
+		laptopServicePath + "CreateLaptop": {"admin"},
+		laptopServicePath + "UploadImage":  {"admin"},
+		laptopServicePath + "RateLaptop":   {"admin", "user"},
+	}
 }

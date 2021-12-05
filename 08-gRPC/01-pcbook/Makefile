@@ -27,6 +27,8 @@ gen1:
 clean1:
     rm pb/*.go 
 
+.PHONY: gen clean server client test   
+
 fmt:
    go fmt ./...
 # -------------------------------------------------------------------

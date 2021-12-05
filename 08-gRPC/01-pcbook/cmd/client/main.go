@@ -1,25 +1,132 @@
 package main
 
 import (
-	"bufio"
-	"context"
 	"flag"
 	"fmt"
-	"io"
 	"log"
-	"os"
-	"path/filepath"
+	authclient "pcbook/AuthClient"
 	"pcbook/pb"
 	"pcbook/sample"
 	"strings"
 	"time"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+)
+
+const (
+	username        = "user1"
+	password        = "secret"
+	refreshDuration = 30 * time.Second
 )
 
 func main() {
+	serverAddress := flag.String("address", "", "the server address")
+	flag.Parse()
+	log.Printf("dial server %s", *serverAddress)
+
+	cc1, err := grpc.Dial(*serverAddress, grpc.WithInsecure())
+	if err != nil {
+		log.Fatal("cannot dial server: ", err)
+	}
+
+	//we should call client.NewLaptopClient() and pass in the gRPC connection.
+	//this is a bit tricky, but we’re gonna need a separate connection for the auth client because
+	//it will be used to create an auth interceptor, which will be used to create another connection for the laptop client.
+	authClient := authclient.NewAuthClient(cc1, username, password)
+	//So I’ve changed the connection name to cc1, and create a new auth client with it. To make it simple, here I define username and password as constants.
+	//hen let’s create a new interceptor with the auth client. The refresh duration will also be a constant
+	interceptor, err := authclient.NewAuthInterceptor(authClient, authMethods(), refreshDuration)
+	if err != nil {
+		log.Fatal("cannot create auth interceptor: ", err)
+	}
+
+	//We will dial server to create another connection. But this time, we also add 2 dial options: the unary interceptor and the stream interceptor.
+	cc2, err := grpc.Dial(
+		*serverAddress,
+		grpc.WithInsecure(),
+		grpc.WithUnaryInterceptor(interceptor.Unary()),
+		grpc.WithStreamInterceptor(interceptor.Stream()),
+	)
+	if err != nil {
+		log.Fatal("cannot dial server: ", err)
+	}
+
+	laptopClient := authclient.NewLaptopClient(cc2)
+	testRateLaptop(laptopClient)
+}
+
+func testCreateLaptop(laptopClient *authclient.LaptopClient) {
+	laptopClient.CreateLaptop(sample.NewLaptop())
+	//createLaptop(laptopClient, sample.NewLaptop())
+}
+
+func testSearchLaptop(laptopClient *authclient.LaptopClient) {
+	for i := 0; i < 10; i++ {
+		laptopClient.CreateLaptop(sample.NewLaptop())
+		//createLaptop(laptopClient, sample.NewLaptop())
+	}
+
+	filter := &pb.Filter{
+		MaxPriceUsd: 3000,
+		MinCpuCores: 4,
+		MinCpuGhz:   2.5,
+		MinRam:      &pb.Memory{Value: 8, Unit: pb.Memory_GIGABYTE},
+	}
+
+	laptopClient.SearchLaptop(filter)
+	//searchLaptop(laptopClient, filter)
+}
+
+func testUploadImage(laptopClient *authclient.LaptopClient) {
+	laptop := sample.NewLaptop()
+	laptopClient.CreateLaptop(laptop)
+	laptopClient.UploadImage(laptop.GetId(), "tmp/golang.jpg")
+	// createLaptop(laptopClient, laptop)
+	// uploadImage(laptopClient, laptop.GetId(), "tmp/golang.jpg")
+}
+
+func testRateLaptop(laptopClient *authclient.LaptopClient) {
+	n := 3
+	laptopIDs := make([]string, n)
+
+	for i := 0; i < n; i++ {
+		laptop := sample.NewLaptop()
+		laptopIDs[i] = laptop.GetId()
+		laptopClient.CreateLaptop(laptop)
+	}
+
+	scores := make([]float64, n)
+	for {
+		fmt.Print("rate laptop (y/n)? ")
+		var answer string
+		fmt.Scan(&answer)
+		if strings.ToLower(answer) != "y" {
+			break
+		}
+		for i := 0; i < n; i++ {
+			scores[i] = sample.RandomLaptopScore()
+		}
+
+		err := laptopClient.RateLaptop(laptopIDs, scores)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+}
+
+func authMethods() map[string]bool {
+	const laptopServicePath = "/proto.LaptopService/"
+
+	return map[string]bool{
+		laptopServicePath + "CreateLaptop": true,
+		laptopServicePath + "UploadImage":  true,
+		laptopServicePath + "RateLaptop":   true,
+	}
+}
+
+//---------------------------------------------------------------- OLD Code
+/*
+func main1() {
 	serverAddress := flag.String("address", "", "the server address")
 	flag.Parse()
 	log.Printf("dial server %s", *serverAddress)
@@ -36,11 +143,11 @@ func main() {
 	//testRateLaptop(laptopClient)
 }
 
-func testCreateLaptop(laptopClient pb.LaptopServiceClient) {
+func testCreateLaptop1(laptopClient pb.LaptopServiceClient) {
 	createLaptop(laptopClient, sample.NewLaptop())
 }
 
-func testSearchLaptop(laptopClient pb.LaptopServiceClient) {
+func testSearchLaptop1(laptopClient pb.LaptopServiceClient) {
 	for i := 0; i < 10; i++ {
 		createLaptop(laptopClient, sample.NewLaptop())
 	}
@@ -55,13 +162,13 @@ func testSearchLaptop(laptopClient pb.LaptopServiceClient) {
 	searchLaptop(laptopClient, filter)
 }
 
-func testUploadImage(laptopClient pb.LaptopServiceClient) {
+func testUploadImage1(laptopClient pb.LaptopServiceClient) {
 	laptop := sample.NewLaptop()
 	createLaptop(laptopClient, laptop)
 	uploadImage(laptopClient, laptop.GetId(), "tmp/golang.jpg")
 }
 
-func testRateLaptop(laptopClient pb.LaptopServiceClient) {
+func testRateLaptop1(laptopClient pb.LaptopServiceClient) {
 
 	//Let’s say we want to rate 3 laptops, so we declare a slice to keep the laptop IDs
 	n := 3
@@ -296,3 +403,4 @@ func rateLaptop(laptopClient pb.LaptopServiceClient, laptopIDs []string, scores 
 	err = <-waitResponse
 	return err
 }
+*/

@@ -54,6 +54,7 @@ func main() {
 	//https://dev.to/techschoolguru/grpc-reflection-and-evans-cli-3oia
 	//4-Run by command
 	//evans -r repl -p 8080
+	// show package ; show service ; show message ; desc
 
 	address := fmt.Sprintf("0.0.0.0:%d", *port)
 	listener, err := net.Listen("tcp", address)
@@ -88,11 +89,11 @@ func createUser(
 }
 
 func accessibleRoles() map[string][]string {
-	const laptopServicePath = "/techschool.pcbook.LaptopService/"
+	const laptopServicePath = "/proto.LaptopService/"
 
 	return map[string][]string{
 		laptopServicePath + "CreateLaptop": {"admin"},
 		laptopServicePath + "UploadImage":  {"admin"},
-		laptopServicePath + "RateLaptop":   {"admin", "user"},
+		laptopServicePath + "RateLaptop":   {"admin", "user1"},
 	}
 }

@@ -1,0 +1,2 @@
+run:
+	go run main.go connection.go 1-introCRUD.go 2-relation.go

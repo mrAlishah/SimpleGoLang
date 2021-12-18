@@ -12,6 +12,14 @@ func main() {
 	//introCRUD()
 
 	//--------------------------------Relation
-	initUserHasOne()
-	initHasOne()
+	//initUserHasOne()
+	//initHasOne()
+
+	//--------------------------------Has Many
+	initSchemaUserHasMany()
+	initDataUserHasMany()
+	//PreloadUserHasMany()
+	//JoinsUserHasMany()
+	//RowsUserHasMany()
+	RawSqlUserHasMany()
 }

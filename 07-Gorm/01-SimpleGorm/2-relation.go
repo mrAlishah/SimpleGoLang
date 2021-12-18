@@ -6,6 +6,8 @@ import (
 	"gorm.io/gorm"
 )
 
+//belong to =  `User` belongs to `Calender`, `CalenderID` is the foreign key
+//Has One =   User has one Calender, CalenderID is the foreign key
 type UserHasOne struct {
 	gorm.Model
 	UserName  string `gorm:"type:varchar(100);column:UserName"`

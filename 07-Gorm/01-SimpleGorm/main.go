@@ -8,18 +8,31 @@ func main() {
 	println("Connection to database established")
 
 	//--------------------------------introCRUD
-	//initUser()
-	//introCRUD()
-
+	initUser()
+	introCRUD()
+	//--------------------------------CRUD Advance
+	crudAdvanced()
 	//--------------------------------Relation
-	//initUserHasOne()
-	//initHasOne()
+	// initUserHasOne()
+	// initHasOne()
 
 	//--------------------------------Has Many
-	initSchemaUserHasMany()
-	initDataUserHasMany()
-	//PreloadUserHasMany()
-	//JoinsUserHasMany()
-	//RowsUserHasMany()
-	RawSqlUserHasMany()
+	// initSchemaUserHasMany()
+	// initDataUserHasMany()
+	// PreloadUserHasMany()
+	// JoinsUserHasMany()
+	// RowsUserHasMany()
+	// RawSqlUserHasMany()
+
+	//--------------------------------Many to Many
+	// initSchemaUserMany2Many()
+	// initDataUserMany2Many()
+	// PreloadUserMany2Many()
+
+	//--------------------------------Pizza
+	// Migrate(db)
+	// Seed(db)
+	// ListEverything(db)
+	// ClearEverything(db)
+
 }

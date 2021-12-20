@@ -6,7 +6,7 @@ import (
 	"github.com/kr/pretty"
 )
 
-type UserHasMany struct {
+type UserM struct {
 	//gorm.Model
 	ID   uint32 `gorm:"primaryKey,autoIncrement"` //its name id
 	Name string `gorm:"type:varchar(100);column:Name"`
@@ -22,15 +22,15 @@ type CreditCard struct {
 }
 
 //:: UserHasMany
-func (user *UserHasMany) TableName() string {
-	return "UserHasMany"
+func (user *UserM) TableName() string {
+	return "UserM"
 }
 
-func (user *UserHasMany) ToString() string {
+func (user *UserM) ToString() string {
 	return fmt.Sprint(pretty.Sprint(user))
 }
 
-func (user *UserHasMany) ToStringAll() string {
+func (user *UserM) ToStringAll() string {
 	return fmt.Sprint(pretty.Print(user))
 }
 
@@ -47,8 +47,8 @@ func (credit *CreditCard) ToString() string {
 func initSchemaUserHasMany() {
 	// Migrate the schema
 	//db.AutoMigrate(&User{})
-	db.Migrator().DropTable(&UserHasMany{})
-	db.Migrator().CreateTable(&UserHasMany{})
+	db.Migrator().DropTable(&UserM{})
+	db.Migrator().CreateTable(&UserM{})
 	db.Migrator().DropTable(&CreditCard{})
 	db.Migrator().CreateTable(&CreditCard{})
 	println("Table created")
@@ -57,7 +57,7 @@ func initSchemaUserHasMany() {
 
 func initDataUserHasMany() {
 	//.Debug()
-	db.Save(&UserHasMany{
+	db.Save(&UserM{
 		Name: "Mostafa",
 		CreditCards: []CreditCard{
 			{Number: "111"},
@@ -65,7 +65,7 @@ func initDataUserHasMany() {
 		},
 	})
 
-	db.Save(&UserHasMany{
+	db.Save(&UserM{
 		Name: "Hasan",
 		CreditCards: []CreditCard{
 			{Number: "222"},
@@ -75,7 +75,7 @@ func initDataUserHasMany() {
 
 func PreloadUserHasMany() {
 
-	users := []UserHasMany{}
+	users := []UserM{}
 
 	// db.Preload("CreditCards").Find(&users)
 	if err := db.Where("id = ? and \"Name\" = ?", 1, "Mostafa").Preload("CreditCards").Find(&users).Error; err != nil {
@@ -86,8 +86,8 @@ func PreloadUserHasMany() {
 
 func JoinsUserHasMany() {
 
-	users := []UserHasMany{}
-	tbl := `JOIN "CreditCard" ON "CreditCard"."UserID" = "UserHasMany"."id"`
+	users := []UserM{}
+	tbl := `JOIN "CreditCard" ON "CreditCard"."UserID" = "UserM"."id"`
 
 	if err := db.Debug().Joins(tbl).Find(&users).Error; err != nil {
 		fmt.Printf(err.Error())
@@ -95,7 +95,7 @@ func JoinsUserHasMany() {
 	printUsers(users)
 }
 
-func printUsers(users []UserHasMany) {
+func printUsers(users []UserM) {
 	for _, user := range users {
 		fmt.Println(user.ToStringAll())
 	}
@@ -104,13 +104,13 @@ func printUsers(users []UserHasMany) {
 
 func RowsUserHasMany() {
 
-	rows, err := db.Debug().Table("UserHasMany").Where(`"UserHasMany"."Name" = ?`, "Mostafa").Joins(`JOIN "CreditCard" ON "CreditCard"."UserID" = "UserHasMany"."id"`).Select("*").Rows()
+	rows, err := db.Debug().Table("UserM").Where(`"UserM"."Name" = ?`, "Mostafa").Joins(`JOIN "CreditCard" ON "CreditCard"."UserID" = "UserM"."id"`).Select("*").Rows()
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
 	defer rows.Close()
 
-	var user UserHasMany
+	var user UserM
 
 	for rows.Next() {
 		// ScanRows scan a row into user
@@ -129,7 +129,7 @@ const (
 	c."Number",
 	c."UserID" 
 	
-	FROM "UserHasMany" u
+	FROM "UserM" u
 	LEFT JOIN "CreditCard" c ON c."UserID" = u.id
 	`
 )
@@ -142,10 +142,10 @@ func RawSqlUserHasMany() {
 	}
 	defer rows.Close()
 
-	users := make([]UserHasMany, 0)
+	users := make([]UserM, 0)
 
 	for rows.Next() {
-		user := UserHasMany{}
+		user := UserM{}
 		credit := CreditCard{}
 		err = rows.Scan(&user.ID, &user.Name, &credit.ID, &credit.Number, &credit.UserID)
 		if err != nil {

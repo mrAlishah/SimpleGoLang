@@ -23,7 +23,7 @@ var srvConfig = postgresCnf{
 	PORT:     5432,
 	USER:     "postgres",
 	PASSWORD: "alish",
-	DBNAME:   "gormTest",
+	DBNAME:   "Test",
 	SSLMODE:  "disable",
 }
 

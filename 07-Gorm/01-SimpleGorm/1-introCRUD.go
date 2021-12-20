@@ -8,6 +8,7 @@ type User struct {
 	UserName  string `json:"username" gorm:"type:varchar(100)"`
 	FirstName string `json:"firstname" gorm:"type:varchar(100)"`
 	LastName  string `json:"lastname" gorm:"type:varchar(100)"`
+	Salary    uint   `json:"Salary" gorm:"default:0"`
 }
 
 var users []User = []User{
@@ -64,4 +65,9 @@ func printAll() {
 		fmt.Printf("Record  %v \n", user)
 	}
 	println("\n==============================\n")
+}
+
+// NotFound checks if a record exists in the database
+func (u *User) NotFound() bool {
+	return u.ID == 0
 }

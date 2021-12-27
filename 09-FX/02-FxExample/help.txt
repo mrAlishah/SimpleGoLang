@@ -1,0 +1,11 @@
+https://pmihaylov.com/dependency-injection-go-fx/
+https://github.com/preslavmihaylov/fxappexample/
+
+1-
+go get -u go.uber.org/zap
+
+2-
+go get -u gopkg.in/yaml.v2
+
+3-
+go get go.uber.org/fx

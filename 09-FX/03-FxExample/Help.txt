@@ -1,0 +1,2 @@
+https://pmihaylov.com/shared-components-go-microservices/
+https://github.com/preslavmihaylov/fxappexample/
